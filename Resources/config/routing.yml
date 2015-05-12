@@ -1,0 +1,3 @@
+wuvj_bpm_homepage:
+    path:     /wuvjbpm/
+    defaults: { _controller: wuvjBPMBundle:Default:index }
