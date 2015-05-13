@@ -1,6 +1,0 @@
-imports:
-    - { resource: jbpm.yml }
-services:
-#    wuvj_bpm_control.example:
-#        class: wuv\jBPMBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
