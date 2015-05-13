@@ -1,0 +1,23 @@
+{
+    "name": "xrow/jbpm-bundle",
+    "description": "Manage your Workflow with jBPM.",
+    "type": "import",
+    "keywords": [ "jbpm", "process", "workflow", "ezpublish" ],
+    "homepage": "http://www.xrow.de",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Björn Dieding",
+            "email": "bjoern@xrow.de",
+            "homepage": "http://www.xrow.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "guzzlehttp/guzzle": "~5.0"
+    },
+    "autoload": {
+        "psr-4": { "xrow\\jBPMBundle\\": ""}
+    }
+}
