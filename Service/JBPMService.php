@@ -72,4 +72,15 @@ class JBPMService
             return NULL;
         }
     }
+   /*
+    * @param string name Name of Task
+    * @return Array of Task Status "In Progress"
+    * @throw Exception If Task does not exist
+    */
+    public function getInprogressTasks()
+    {
+        $tasklist=$this->client->get('task/query?status=InProgress');
+        $taskArray=$tasklist->json();
+        return $taskArray;
+    }
 }

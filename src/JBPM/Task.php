@@ -32,6 +32,7 @@ class Task
         $task_id=$this->getTaskId();
         $task_complete = $this->client->post('task/'.$task_id.'/complete');
         $task_status=$task_complete->json();
+
         if($task_status['status'] == "SUCCESS")
         {
             return true;

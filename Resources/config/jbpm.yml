@@ -6,7 +6,21 @@ parameters:
      password: admin
      baseurl: http://workflow.xrow.lan/jbpm-console/rest/
      
+  jbpm.task.class: xrow\jBPMBundle\Service\TaskService
+  
+  jbpm.task.config:
+     cms:
+       publish: 
+            publishevent1: xrow\jBPMBundle\Tests\publishevent1
+            #publishevent2: wuv\aboshopbundle\tasks\publishevent2
+       #order:
+            #oderevent1: wuv\aboshopbundle\tasks\oderevent1
+     
 services:
      jbpm.client:
         class: %jbpm.client.class%
         arguments: [%jbpm.client.config%]
+     
+     jbpm.task:
+        class: %jbpm.task.class%
+        arguments: [%jbpm.task.config%] 
