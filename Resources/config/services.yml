@@ -1,6 +1,4 @@
 imports:
     - { resource: jbpm.yml }
 services:
-#    xrowj_bpm.example:
-#        class: xrow\jBPMBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
+

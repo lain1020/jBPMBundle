@@ -15,16 +15,15 @@ class DefaultController extends Controller
         
         //get Guzzle Client
         $client=$this->container->get('jbpm.client');
+        $processDefinition = $client->getProcess('cms.order');
         
-        $processDefinition = $client->getProcess('cms.publish');
-         
         $processInstance=$processDefinition->start($data);
         if(!is_null($processInstance))
         {
             $task=$processInstance->currentTask();
             if(!is_null($task))
             {
-                return $this->render('xrowjBPMBundle:Default:index.html.twig',array('processid' => $processInstance->getProcessInstanceId(),'processName'=>$processDefinition->getProcessName()));
+                return $this->render('xrowjBPMBundle:Default:index.html.twig',array('processid' => $processInstance->getProcessInstanceId(),'processName'=>$processDefinition->getProcessDefinitionID()));
             }else{
                 return NULL;
             }
@@ -33,25 +32,4 @@ class DefaultController extends Controller
         }
     }
 }
-
-/*
- * jbpm.client symfony service id
- * cms symfony service parameter 
-
-$data = array();
-$data["email"] = "bjoern@xrow.de";
-
-
-$clientShop = $this->container->get('jbpm.client.shop');
-$process = $client->getProcess( "order");
-$process->start( $data );
-$task = $process->currentTask();
-$task->complete();
-$process->terminate();
-
-
-$clientCMS = $this->container->get('jbpm.client');
-$process = $clientCMS->getProcess( "publish", "cms" );
-
-*/
 

@@ -18,6 +18,7 @@
         "guzzlehttp/guzzle": "~5.0"
     },
     "autoload": {
+        "xrow\\JBPM\\": "src/JBPM",
         "psr-4": { "xrow\\jBPMBundle\\": ""}
     }
 }

@@ -3,42 +3,38 @@ namespace xrow\jBPMBundle\Service;
 
 class TaskService 
 {
-    protected $taskExecuterArray;
+    /**
+     * @var an array of Task Name
+     */
     protected $taskNameArray;
-    protected $projectName;
-    protected $processNameArray;
     
+    /**
+     * @param array $config an array of configuration values
+     */
     public function __construct( $config)
     {
         foreach($config as $project_name => $config_items)
         {
-            $this->project_name =$project_name;
             foreach($config_items as $process_name => $config_item)
             {
-                $process_name_array[]= $process_name;
                 foreach($config_item as $task_name => $task_executer)
                 {
-                    $task_name_array[$task_executer]=$task_name;
+                    $task_string= $project_name.".".$process_name."-".$task_name;
+                    $task_name_array[$task_string]=$task_executer;
                 }
             }
-            $this->process_name_array=$process_name_array;
-            $this->task_name_array = $task_name_array;
         }
+        $this->task_name_array = $task_name_array;
     }
 
+    /**
+     * gets the task names
+     * 
+     * @return array of Task Name
+     */
     public function getTaskNameArray()
     {
         $taskNameArray = $this->task_name_array;
         return $taskNameArray;
-    }
-    public function getProjectName()
-    {
-        $projectName = $this->project_name;
-        return $projectName;
-    }
-    public function getProcessNameArray()
-    {
-        $processNameArray = $this->process_name_array;
-        return $processNameArray;
     }
 }

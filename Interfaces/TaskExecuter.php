@@ -6,5 +6,5 @@ interface TaskExecuter
     /*
      * Throws Exception on error Task is not compelted
     */
-    public function execute( $taskid );
+    public function execute();
 }

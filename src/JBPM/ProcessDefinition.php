@@ -2,44 +2,53 @@
 namespace xrow\jBPMBundle\src\JBPM;
 
 use xrow\jBPMBundle\src\JBPM\ProcessInstance;
+use Exception;
 
 class ProcessDefinition
 {
-    private $id;
-    private $processName;
+    /**
+     * @var Deploymentid
+     */
+    private $deploymentid;
 
-    public function __construct($client)
+    /**
+     * @param int $processDefinitionId  process Definitionsid
+     * @param object $client a Guzzle client
+     */
+    public function __construct($processDefinitionId, $client)
     {
-        $this->id="";
-        $this->processName="";
+        $this->deploymentid="";
+        $this->processDefinitionId=$processDefinitionId;
         $this->client = $client;
-        $this->processInstance = new ProcessInstance($client);
     }
 
-    public function setID($id)
+    /**
+     * @param string $deploymentid
+     * @return Deploymentid
+     */
+    public function setDeploymentID($deploymentid)
     {
-        $this->id = $id;
-    }
-
-    public function getID()
-    {
-        return $this->id;
-    }
-    
-    public function setProcessName($processName)
-    {
-        $this->processName = $processName;
+        $this->deploymentid = $deploymentid;
     }
     
-    public function getProcessName()
+    /**
+     * @return deployment Id
+     */
+    public function getDeploymentID()
     {
-        return $this->processName;
+        return $this->deploymentid;
     }
     
-   /*
+    public function getProcessDefinitionID()
+    {
+        return $this->processDefinitionId;
+    }
+    
+   
+   /**
     * @param array data Data of Process
     * @return object of Process Instance
-    * @throw Exception If Process starting error
+    * @throws Exception If Process starting error
     */
     public function start($data)
     {
@@ -58,7 +67,7 @@ class ProcessDefinition
                 $i++;
             }
         }
-        $id_array=$this->getID();
+        $id_array=$this->getDeploymentID();
         if(count($id_array)>0)
         {
             foreach($id_array as $proce_id => $dep_id)
@@ -70,14 +79,14 @@ class ProcessDefinition
                 $process_status=$process_start->json();
                 if($process_status['status'] == "SUCCESS")
                 {
-                    $this->processInstance->setProcessInstanceId($process_status['id']);
-                    return $this->processInstance;
+                    $processInstance = new ProcessInstance($process_status['id'], $this->client);
+                    return $processInstance;
                 }else{
-                    return NULL;
+                    throw  new Exception( "Process starting error!");
                 }
             }
         }else{
-            return NULL;
+            throw  new Exception( "Process starting error!");
         }
     }
 }

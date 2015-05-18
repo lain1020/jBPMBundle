@@ -2,49 +2,28 @@
 namespace xrow\jBPMBundle\Tests;
 
 use xrow\jBPMBundle\Interfaces\TaskExecuter;
+#Richtig! PSR 4
+//use xrow\JBPM\Task;
+#FALSCH ! nicht PSR 4
 use xrow\jBPMBundle\src\JBPM\Task;
 use xrow\jBPMBundle\src\JBPM\ProcessInstance;
-use xrow\jBPMBundle\src\JBPM\ProcessDefinition;
+use xrow\jBPMBundle\src\JBPM\AbstractTask;
 use GuzzleHttp\Client;
 
-class publishevent1 implements TaskExecuter
+class publishevent1 extends AbstractTask implements TaskExecuter
 {
-    public function __construct()
-    {
-        $this->client = new Client(['base_url'=>'http://workflow.xrow.lan/jbpm-console/rest/', 
-                                    'defaults'=>[
-                                         'auth' => ['admin', 'admin'],
-                                         'headers'=>['Accept'=>'application/json']]]);
-        $this->task = new Task($this->client);
-        $this->processDefinition = new ProcessDefinition($this->client);
-        $this->processInstance = new ProcessInstance($this->client);
-    }
-     
-    /*
+    /**
      * Throws Exception on error Task is not compelted
+     * @return void 
      */
-    public function execute( $taskid )
+    public function execute()
     {
-        $valueName="";
-        $value="";
-        
-        $this->task->setTaskId($taskid);
-        $task_complate_status=$this->task->TaskComplete();
-        
-        if($task_complate_status)
-        {
-            $this->processInstance->setProcessInstanceId($taskid);
-            $dataArray=$this->processInstance->getData();
-            
-            foreach($dataArray as $valueName =>$value)
-            {
-                if($valueName == "email")
-                {
-                    return array('processid'=>$taskid,'valueName'=>$valueName,'value'=>$value);
-                }
-            }
-        }else{
-            return array();
-        }
+        $data=$this->processInstance->getData();
+        /*mail("bjoern@xrow.de", "mail", $data["email"]);
+        if(!file_get_contents("http://domain-is-not-here-asdf.com/"))
+        { 
+            throw  new \Exception( "Server down");
+        }*/
+        return $data;
     }
 }

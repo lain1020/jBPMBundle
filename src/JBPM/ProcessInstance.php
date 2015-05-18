@@ -2,31 +2,31 @@
 namespace xrow\jBPMBundle\src\JBPM;
 
 use xrow\jBPMBundle\src\JBPM\Task;
+use Exception;
 
 class ProcessInstance
 {
-    private $processInstanceId;
-    
-    public function __construct($client)
+    /**
+     * @param int $id processInstanceId
+     * @param object $client a Guzzle client
+     */
+    public function __construct($id,$client)
     {
-        $this->processInstanceId="";
+        $this->processInstanceId=$id;
         $this->client = $client;
-        $this->task = new Task($client);
     }
     
-    public function setProcessInstanceId($processInstanceId)
-    {
-        $this->processInstanceId = $processInstanceId;
-    }
-    
+    /**
+     * @return Process Instance Id
+     */
     public function getProcessInstanceId()
     {
         return $this->processInstanceId;
     }
     
-   /*
+   /**
     * @return Objeck of Task
-    * @throw Exception If Task does not exist
+    * @throws Exception If Task does not exist
     */
     public function currentTask()
     {
@@ -43,14 +43,14 @@ class ProcessInstance
         $task_status=$task_start->json();
         if($task_status['status'] == "SUCCESS")
         {
-            $this->task->setTaskId($task_id);
-            return $this->task;
+            $task = new Task($task_id,$this->client);
+            return $task;
         }else{
-            return NULL;
+            throw  new Exception( "Task does not exist!");
         }
     }
     
-   /*
+   /**
     * @return  data of Process in an array
     */
     public function getData()
