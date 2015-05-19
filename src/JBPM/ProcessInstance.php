@@ -1,12 +1,13 @@
 <?php
-namespace xrow\jBPMBundle\src\JBPM;
+namespace xrow\JBPM;
 
-use xrow\jBPMBundle\src\JBPM\Task;
-use Exception;
+use xrow\JBPM\Task;
 
 class ProcessInstance
 {
     /**
+     * class constructor
+     * 
      * @param int $id processInstanceId
      * @param object $client a Guzzle client
      */

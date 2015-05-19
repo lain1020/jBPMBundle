@@ -2,13 +2,15 @@
 namespace xrow\jBPMBundle\Service;
 
 use GuzzleHttp\Client;
-use xrow\jBPMBundle\src\JBPM\ProcessDefinition;
-use xrow\jBPMBundle\src\JBPM\Task;
+use xrow\JBPM\ProcessDefinition;
+use xrow\JBPM\Task;
 use Exception;
 
 class JBPMService 
 {
     /**
+     * class constructor
+     * 
      * @param array $config an array of configuration values
      */
     public function __construct($config)
@@ -95,7 +97,7 @@ class JBPMService
         }
     }
    /**
-    * @param string type Status Type of Taskfo
+    * @param string type Status Type of Task
     * @return Array of Task  Status "In Progress" oder Status "Reserved"
     */
     public function getTasks( $type = Task::STATUS_IN_PROGRESS )
@@ -111,12 +113,21 @@ class JBPMService
     }
     
     /**
-     * @param int taskid
-     * @return object of Task
+     * @param int $processinstanceid
+     * @return array of forwardtask object
      */
-    public function getForwardTasks( $taskid )
+    public function getForwardTasks( $processinstanceid )
     {
-        $forwardTask = new Task($taskid, $this->client);
+        $forwardTask = array();
+        $forwardtasklist=$this->client->get('task/query?processInstanceId='.$processinstanceid );
+        $forwardtaskArray = $forwardtasklist->json();
+        foreach($forwardtaskArray['taskSummaryList'] as $forwardtask)
+        {
+            if($forwardtask['task-summary']['status'] == 'Reserved')
+            {
+                $forwardTask[] = new Task($forwardtask['task-summary']['id'], $this->client);
+            }
+        }
         return $forwardTask;
     }
 }

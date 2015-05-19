@@ -1,13 +1,15 @@
 <?php
-namespace xrow\jBPMBundle\src\JBPM;
+namespace xrow\JBPM;
 
 use GuzzleHttp\Client;
 
 class AbstractTask
 {
     /**
-     * @param object $process Instance of Process
-     * @param object $task Instance of Task
+     * class constructor
+     * 
+     * @param object $process the instance of Process
+     * @param object $task the instance of Task
      */
     public function __construct( ProcessInstance $processInstance, Task $task )
     {

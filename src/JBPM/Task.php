@@ -1,5 +1,5 @@
 <?php
-namespace xrow\jBPMBundle\src\JBPM;
+namespace xrow\JBPM;
 
 use GuzzleHttp\Client;
 use Exception;
@@ -31,6 +31,8 @@ class Task
     public $processinstanceid;
 
     /**
+     * class constructor
+     * 
      * @param int $id Task Id
      * @param object $client a Guzzle client
      */
@@ -41,7 +43,7 @@ class Task
     }
     
     /**
-     * @return Task id
+     * @return int Task id
      */
     public function getID()
     {
@@ -87,7 +89,7 @@ class Task
     }
     
     /**
-     * It is an assignment.
+     * It is an assignment function.
      */
     public function TaskSummaryArray()
     {

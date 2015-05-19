@@ -7,10 +7,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-use xrow\jBPMBundle\src\JBPM\Task;
-use xrow\jBPMBundle\src\JBPM\ProcessInstance;
+use xrow\JBPM\Task;
+use xrow\JBPM\ProcessInstance;
 
 use Exception;
+
+/**
+ * Cronjob: Control of Start/Stop Task.
+ * Command: php -d memory_limit=1024M ezpublish/console jbpm:task
+ * */
 
 class TaskCronjobCommand extends ContainerAwareCommand
 {
@@ -39,36 +44,34 @@ class TaskCronjobCommand extends ContainerAwareCommand
         $curtaskObjects=$this->getContainer()->get('jbpm.task')->getTaskNameArray();
         
         $reserved_tasks = $jbpmService->getTasks(Task::STATUS_IN_RESERVED);
-
-        if(count($reserved_tasks) > 0)
+        if(count( $reserved_tasks ) > 0 )
         {
-            foreach($reserved_tasks as $task_r)
+            foreach($reserved_tasks as $reserved_task)
             {
-                $task_r->getTaskSummaryArray();
-                foreach($inprogress_tasks as $task_i)
+                $reserved_task->TaskSummaryArray();
+                $forwardtasks=$jbpmService->getForwardTasks($reserved_task->processinstanceid);
+                
+                if(count($forwardtasks) > 0)
                 {
-                    $task_i->getTaskSummaryArray();
-                    
-                    if($task_r->processinstanceid == $task_i->processinstanceid)
+                    foreach($forwardtasks as $forwardtask)
                     {
                         try{
-                            $task_r->start();
-                        }catch(Exception $e)
+                            $forwardtask->start();
+                        }catch (Exception $e)
                         {
                             echo 'Caught exception: ',  $e->getMessage(), "\n";
                         }
                     }
-                 }
-             }
-         }
+                }
+            }
+        }
         
         $inprogress_tasks = $jbpmService->getTasks(Task::STATUS_IN_PROGRESS);
         if(count( $inprogress_tasks ) > 0 )
         {
             foreach($inprogress_tasks as $task)
             {
-                $task->getTaskSummaryArray();
-
+                $task->TaskSummaryArray();
                 foreach($curtaskObjects as $taskString => $taskExecuter)
                 {
                     $taskStringArray= explode("-",$taskString);

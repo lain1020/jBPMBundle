@@ -1,5 +1,4 @@
 <?php
-
 namespace xrow\jBPMBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

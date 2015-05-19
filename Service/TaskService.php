@@ -9,6 +9,8 @@ class TaskService
     protected $taskNameArray;
     
     /**
+     * class constructor
+     * 
      * @param array $config an array of configuration values
      */
     public function __construct( $config)

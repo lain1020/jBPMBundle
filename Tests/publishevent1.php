@@ -2,14 +2,14 @@
 namespace xrow\jBPMBundle\Tests;
 
 use xrow\jBPMBundle\Interfaces\TaskExecuter;
-#Richtig! PSR 4
-//use xrow\JBPM\Task;
-#FALSCH ! nicht PSR 4
-use xrow\jBPMBundle\src\JBPM\Task;
-use xrow\jBPMBundle\src\JBPM\ProcessInstance;
-use xrow\jBPMBundle\src\JBPM\AbstractTask;
+
+use xrow\JBPM\Task;
+use xrow\JBPM\ProcessInstance;
+use xrow\JBPM\AbstractTask;
+
 use GuzzleHttp\Client;
 
+/* Here is a simple example */
 class publishevent1 extends AbstractTask implements TaskExecuter
 {
     /**

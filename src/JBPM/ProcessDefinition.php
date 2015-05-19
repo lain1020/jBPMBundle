@@ -1,8 +1,7 @@
 <?php
-namespace xrow\jBPMBundle\src\JBPM;
+namespace xrow\JBPM;
 
-use xrow\jBPMBundle\src\JBPM\ProcessInstance;
-use Exception;
+use xrow\JBPM\ProcessInstance;
 
 class ProcessDefinition
 {
@@ -12,6 +11,8 @@ class ProcessDefinition
     private $deploymentid;
 
     /**
+     * class constructor
+     * 
      * @param int $processDefinitionId  process Definitionsid
      * @param object $client a Guzzle client
      */
