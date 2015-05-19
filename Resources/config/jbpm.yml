@@ -1,11 +1,6 @@
 parameters:
   jbpm.client.class: xrow\jBPMBundle\Service\JBPMService
   jbpm.task.class: xrow\jBPMBundle\Service\TaskService
- 
-  jbpm.client.config:
-     username: admin
-     password: admin
-     baseurl: http://workflow.xrow.lan/jbpm-console/rest/
      
 services:
      jbpm.client:
