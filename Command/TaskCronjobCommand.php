@@ -48,7 +48,6 @@ class TaskCronjobCommand extends ContainerAwareCommand
         {
             foreach($reserved_tasks as $reserved_task)
             {
-                $reserved_task->TaskSummaryArray();
                 $forwardtasks=$jbpmService->getForwardTasks($reserved_task->processinstanceid);
                 
                 if(count($forwardtasks) > 0)
@@ -71,7 +70,6 @@ class TaskCronjobCommand extends ContainerAwareCommand
         {
             foreach($inprogress_tasks as $task)
             {
-                $task->TaskSummaryArray();
                 foreach($curtaskObjects as $taskString => $taskExecuter)
                 {
                     $taskStringArray= explode("-",$taskString);
@@ -82,9 +80,12 @@ class TaskCronjobCommand extends ContainerAwareCommand
                     {
                         $processInstance=new ProcessInstance($task->processinstanceid, $jbpmService->getClient());
                         $taskClass=$taskExecuter;
-                        $taskFunction = new $taskClass($processInstance,$task);
-                        try{
+                        if(class_exists($taskClass))
+                        {
+                            $taskFunction = new $taskClass($processInstance,$task);
                             $taskFunction->execute();
+                        }
+                        try{
                             $task->complete();
                         }catch (Exception $e)
                         {

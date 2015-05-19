@@ -40,6 +40,16 @@ class Task
     {
         $this->taskid= $id;
         $this->client = $client;
+        
+        $taskSummaryList=$client->get('task/query?taskId='.$id);
+        $taskSummaryArray=$taskSummaryList->json();
+        foreach($taskSummaryArray['taskSummaryList'] as $taskSummary)
+        {
+            $this->taskname =$taskSummary['task-summary']['name'];
+            $this->processid =$taskSummary['task-summary']['process-id'];
+            $this->status =$taskSummary['task-summary']['status'];
+            $this->processinstanceid =$taskSummary['task-summary']['process-instance-id'];
+        }
     }
     
     /**
@@ -85,22 +95,6 @@ class Task
             return true;
         }else{
             throw  new Exception( "Task is complete with error!");
-        }
-    }
-    
-    /**
-     * It is an assignment function.
-     */
-    public function TaskSummaryArray()
-    {
-        $taskSummaryList=$this->client->get('task/query?taskId='.$this->getID() );
-        $taskSummaryArray=$taskSummaryList->json();
-        foreach($taskSummaryArray['taskSummaryList'] as $taskSummary)
-        {
-            $this->taskname =$taskSummary['task-summary']['name'];
-            $this->processid =$taskSummary['task-summary']['process-id'];
-            $this->status =$taskSummary['task-summary']['status'];
-            $this->processinstanceid =$taskSummary['task-summary']['process-instance-id'];
         }
     }
 }
