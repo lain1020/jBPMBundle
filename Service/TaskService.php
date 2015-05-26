@@ -7,7 +7,7 @@ class TaskService
      * @var an array of Task Name
      */
     protected $taskNameArray;
-    
+
     /**
      * class constructor
      * 
@@ -21,8 +21,8 @@ class TaskService
             {
                 foreach($config_item as $task_name => $task_executer)
                 {
-                    $task_string= $project_name.".".$process_name."-".$task_name;
-                    $task_name_array[$task_string]=$task_executer;
+                    $task_string = $project_name.".".$process_name."-".$task_name;
+                    $task_name_array[$task_string] = $task_executer;
                 }
             }
         }

@@ -1,12 +1,12 @@
 parameters:
-  jbpm.client.class: xrow\jBPMBundle\Service\JBPMService
-  jbpm.task.class: xrow\jBPMBundle\Service\TaskService
-     
+    jbpm.client.class: xrow\jBPMBundle\Service\JBPMService
+    jbpm.task.class: xrow\jBPMBundle\Service\TaskService
+
 services:
      jbpm.client:
         class: %jbpm.client.class%
         arguments: [%jbpm.client.config%]
-     
+
      jbpm.task:
         class: %jbpm.task.class%
         arguments: [%jbpm.task.config%] 

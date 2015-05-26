@@ -2,12 +2,7 @@
 namespace xrow\jBPMBundle\Tests;
 
 use xrow\jBPMBundle\Interfaces\TaskExecuter;
-
-use xrow\JBPM\Task;
-use xrow\JBPM\ProcessInstance;
 use xrow\JBPM\AbstractTask;
-
-use GuzzleHttp\Client;
 
 /* Here is a simple example */
 class publishevent1 extends AbstractTask implements TaskExecuter

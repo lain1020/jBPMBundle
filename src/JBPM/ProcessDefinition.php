@@ -1,7 +1,6 @@
 <?php
-namespace xrow\JBPM;
 
-use xrow\JBPM\ProcessInstance;
+namespace xrow\JBPM;
 
 class ProcessDefinition
 {
@@ -9,6 +8,14 @@ class ProcessDefinition
      * @var Deploymentid
      */
     private $deploymentid;
+    /**
+     * @var Process definition id
+     */
+    private $processDefinitionId;
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    private $client;
 
     /**
      * class constructor
@@ -18,8 +25,8 @@ class ProcessDefinition
      */
     public function __construct($processDefinitionId, $client)
     {
-        $this->deploymentid="";
-        $this->processDefinitionId=$processDefinitionId;
+        $this->deploymentid = "";
+        $this->processDefinitionId = $processDefinitionId;
         $this->client = $client;
     }
 
@@ -53,13 +60,13 @@ class ProcessDefinition
     */
     public function start($data)
     {
-        $parameters="";
-        if(count($data)>0)
+        $parameters = "";
+        if (count($data)>0)
         {
-            $i=1;
-            foreach($data as $key => $value)
+            $i = 1;
+            foreach ($data as $key => $value)
             {
-                if($i==1)
+                if ($i==1)
                 {
                     $parameters .= "?map_".$key."=".$value;
                 }else{
@@ -68,26 +75,26 @@ class ProcessDefinition
                 $i++;
             }
         }
-        $id_array=$this->getDeploymentID();
-        if(count($id_array)>0)
+        $id_array = $this->getDeploymentID();
+        if (count($id_array)>0)
         {
-            foreach($id_array as $proce_id => $dep_id)
+            foreach ($id_array as $proce_id => $dep_id)
             {
                 $processDef_id = $proce_id;
                 $deploy_id = $dep_id;
-            
+
                 $process_start = $this->client->post('runtime/'.$deploy_id.'/process/'.$processDef_id.'/start'.$parameters);
-                $process_status=$process_start->json();
-                if($process_status['status'] == "SUCCESS")
+                $process_status = $process_start->json();
+                if ($process_status['status'] == Task::STATUS_SUCCESS)
                 {
-                    $processInstance = new ProcessInstance($process_status['id'], $this->client);
+                    $processInstance = new ProcessInstance($process_status['id'], $this->client, $this->container);
                     return $processInstance;
-                }else{
-                    throw  new Exception( "Process starting error!");
+                } else {
+                    throw new Exception( "Process starting error!");
                 }
             }
-        }else{
-            throw  new Exception( "Process starting error!");
+        } else {
+            throw new Exception( "Process starting error!");
         }
     }
 }

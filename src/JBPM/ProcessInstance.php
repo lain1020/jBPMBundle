@@ -1,22 +1,29 @@
 <?php
 namespace xrow\JBPM;
 
-use xrow\JBPM\Task;
-
 class ProcessInstance
 {
+    /**
+     * @var Process definition id
+     */
+    private $processInstanceId;
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    private $client;
+
     /**
      * class constructor
      * 
      * @param int $id processInstanceId
      * @param object $client a Guzzle client
      */
-    public function __construct($id,$client)
+    public function __construct($id, $client)
     {
-        $this->processInstanceId=$id;
+        $this->processInstanceId = $id;
         $this->client = $client;
     }
-    
+
     /**
      * @return Process Instance Id
      */
@@ -24,43 +31,43 @@ class ProcessInstance
     {
         return $this->processInstanceId;
     }
-    
+
    /**
     * @return Objeck of Task
     * @throws Exception If Task does not exist
     */
     public function currentTask()
     {
-        $processInsId=$this->getProcessInstanceId();
-        $task_summary=$this->client->get('task/query?processInstanceId='.$processInsId);
-        $task_json=$task_summary->json();
+        $processInsId = $this->getProcessInstanceId();
+        $task_summary = $this->client->get('task/query?processInstanceId='.$processInsId);
+        $task_json = $task_summary->json();
 
-        foreach($task_json['taskSummaryList'] as $task_att)
+        foreach ($task_json['taskSummaryList'] as $task_att)
         {
-            $task_id=$task_att['task-summary']['id'];
+            $task_id = $task_att['task-summary']['id'];
         }
-        
+
         $task_start = $this->client->post('task/'.$task_id.'/start');
-        $task_status=$task_start->json();
-        if($task_status['status'] == "SUCCESS")
+        $task_status = $task_start->json();
+        if ($task_status['status'] == Task::STATUS_SUCCESS)
         {
-            $task = new Task($task_id,$this->client);
+            $task = new Task($task_id, $this->client);
             return $task;
-        }else{
-            throw  new Exception( "Task does not exist!");
+        } else {
+            throw new Exception("Task does not exist!");
         }
     }
-    
+
    /**
     * @return  data of Process in an array
     */
     public function getData()
     {
-        $data=array();
-        $procInstId=$this->getProcessInstanceId();
+        $data = array();
+        $procInstId = $this->getProcessInstanceId();
         $datalist = $this->client->get('history/instance/'.$procInstId.'/variable');
-        $datas=$datalist->json();
-        foreach($datas['historyLogList'] as $dataitems)
+        $datas = $datalist->json();
+        foreach ($datas['historyLogList'] as $dataitems)
         {
             $data[$dataitems['variable-instance-log']['variable-id']] = $dataitems['variable-instance-log']['value'];
         }

@@ -40,61 +40,59 @@ class TaskCronjobCommand extends ContainerAwareCommand
      */
     protected function execute( InputInterface $input, OutputInterface $output )
     {
-        $jbpmService=$this->getContainer()->get('jbpm.client');
-        $curtaskObjects=$this->getContainer()->get('jbpm.task')->getTaskNameArray();
-        
+        $jbpmService = $this->getContainer()->get('jbpm.client');
+        $curtaskObjects = $this->getContainer()->get('jbpm.task')->getTaskNameArray();
+
         $reserved_tasks = $jbpmService->getTasks(Task::STATUS_IN_RESERVED);
-        if(count( $reserved_tasks ) > 0 )
+        if (count( $reserved_tasks ) > 0 )
         {
-            foreach($reserved_tasks as $reserved_task)
+            foreach ($reserved_tasks as $reserved_task)
             {
-                $forwardtasks=$jbpmService->getForwardTasks($reserved_task->processinstanceid);
-                
-                if(count($forwardtasks) > 0)
+                $forwardtasks = $jbpmService->getForwardTasks($reserved_task->processinstanceid);
+
+                if (count($forwardtasks) > 0)
                 {
-                    foreach($forwardtasks as $forwardtask)
+                    foreach ($forwardtasks as $forwardtask)
                     {
-                        try{
+                        try {
                             $forwardtask->start();
-                        }catch (Exception $e)
-                        {
+                        } catch (Exception $e) {
                             echo 'Caught exception: ',  $e->getMessage(), "\n";
                         }
                     }
                 }
             }
         }
-        
+
         $inprogress_tasks = $jbpmService->getTasks(Task::STATUS_IN_PROGRESS);
-        if(count( $inprogress_tasks ) > 0 )
+        if (count($inprogress_tasks) > 0)
         {
-            foreach($inprogress_tasks as $task)
+            foreach ($inprogress_tasks as $task)
             {
-                foreach($curtaskObjects as $taskString => $taskExecuter)
+                foreach ($curtaskObjects as $taskString => $taskExecuter)
                 {
-                    $taskStringArray= explode("-",$taskString);
-                    $processId=$taskStringArray[0];
-                    $taskName=$taskStringArray[1];
-                   
+                    $taskStringArray = explode("-",$taskString);
+                    $processId = $taskStringArray[0];
+                    $taskName = $taskStringArray[1];
+
                     if($task->taskname === $taskName && $task->processid === $processId)
                     {
-                        $processInstance=new ProcessInstance($task->processinstanceid, $jbpmService->getClient());
-                        $taskClass=$taskExecuter;
+                        $processInstance = new ProcessInstance($task->processinstanceid, $jbpmService->getClient());
+                        $taskClass = $taskExecuter;
                         if(class_exists($taskClass))
                         {
                             $taskFunction = new $taskClass($processInstance,$task);
                             $taskFunction->execute();
                         }
-                        try{
+                        try {
                             $task->complete();
-                        }catch (Exception $e)
-                        {
+                        } catch (Exception $e) {
                             echo 'Caught exception: ',  $e->getMessage(), "\n";
                         }
                     }
                 }
             }
-        }else{
+        } else {
             $output->writeln( "there is no running instance of the Task!" );
         }
     }
