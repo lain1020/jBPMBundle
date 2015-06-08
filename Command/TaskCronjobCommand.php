@@ -40,8 +40,9 @@ class TaskCronjobCommand extends ContainerAwareCommand
      */
     protected function execute( InputInterface $input, OutputInterface $output )
     {
-        $jbpmService = $this->getContainer()->get('jbpm.client');
-        $curtaskObjects = $this->getContainer()->get('jbpm.task')->getTaskNameArray();
+        $container = $this->getContainer();
+        $jbpmService = $container->get('jbpm.client');
+        $curtaskObjects = $container->get('jbpm.task')->getTaskNameArray();
 
         $reserved_tasks = $jbpmService->getTasks(Task::STATUS_IN_RESERVED);
         if (count( $reserved_tasks ) > 0 )
@@ -65,23 +66,17 @@ class TaskCronjobCommand extends ContainerAwareCommand
         }
 
         $inprogress_tasks = $jbpmService->getTasks(Task::STATUS_IN_PROGRESS);
-        if (count($inprogress_tasks) > 0)
-        {
-            foreach ($inprogress_tasks as $task)
-            {
-                foreach ($curtaskObjects as $taskString => $taskExecuter)
-                {
+        if (count($inprogress_tasks) > 0) {
+            foreach ($inprogress_tasks as $task) {
+                foreach ($curtaskObjects as $taskString => $taskClass) {
                     $taskStringArray = explode("-",$taskString);
                     $processId = $taskStringArray[0];
                     $taskName = $taskStringArray[1];
-
-                    if($task->taskname === $taskName && $task->processid === $processId)
-                    {
+                    if ($task->taskname === $taskName && $task->processid === $processId) {
                         $processInstance = new ProcessInstance($task->processinstanceid, $jbpmService->getClient());
-                        $taskClass = $taskExecuter;
-                        if(class_exists($taskClass))
-                        {
-                            $taskFunction = new $taskClass($processInstance,$task);
+
+                        if (class_exists($taskClass)) {
+                            $taskFunction = new $taskClass($processInstance, $task, $container);
                             $taskFunction->execute();
                         }
                         try {

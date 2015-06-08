@@ -60,19 +60,10 @@ class ProcessDefinition
     */
     public function start($data)
     {
-        $parameters = "";
-        if (count($data)>0)
-        {
-            $i = 1;
-            foreach ($data as $key => $value)
-            {
-                if ($i==1)
-                {
-                    $parameters .= "?map_".$key."=".$value;
-                }else{
-                    $parameters .= "&map_".$key."=".$value;
-                }
-                $i++;
+        $parameters = array();
+        if (count($data) > 0) {
+            foreach ($data as $key => $value) {
+                $this->getValueAsString($value, $key, $parameters);
             }
         }
         $id_array = $this->getDeploymentID();
@@ -83,11 +74,11 @@ class ProcessDefinition
                 $processDef_id = $proce_id;
                 $deploy_id = $dep_id;
 
-                $process_start = $this->client->post('runtime/'.$deploy_id.'/process/'.$processDef_id.'/start'.$parameters);
+                $process_start = $this->client->post('runtime/'.$deploy_id.'/process/'.$processDef_id.'/start?'.implode('&', $parameters));
                 $process_status = $process_start->json();
                 if ($process_status['status'] == Task::STATUS_SUCCESS)
                 {
-                    $processInstance = new ProcessInstance($process_status['id'], $this->client, $this->container);
+                    $processInstance = new ProcessInstance($process_status['id'], $this->client);
                     return $processInstance;
                 } else {
                     throw new Exception( "Process starting error!");
@@ -95,6 +86,30 @@ class ProcessDefinition
             }
         } else {
             throw new Exception( "Process starting error!");
+        }
+    }
+
+    /**
+     * Create an array of all given values (array, string, numbers etc.)
+     * 
+     * @param array|string|integer|boolean etc. $value
+     * @param string $key
+     * @param array $params
+     */
+    private function getValueAsString($value, $key, &$params)
+    {
+        if (!is_array($value) && !is_object($value)) {
+            $params[] = 'map_'.$key.'='.urlencode($value);
+        }
+        else {
+            foreach ($value as $keyItem => $valueItem) {
+                if (!is_array($valueItem) && !is_object($valueItem)) {
+                    $params[] = 'map_'.$key.'_'.$keyItem.'='.urlencode($valueItem);
+                }
+                else {
+                    $this->getValueAsString($valueItem, $key."_".$keyItem, $params);
+                }
+            }
         }
     }
 }
