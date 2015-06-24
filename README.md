@@ -9,7 +9,7 @@ You can configure default client parameters and task parameters
 Examples:
 
     ```
-    // ezpublish/config/task.conf.yml
+    // ezpublish/config/jbpmconf.yml
     parameters:
         jbpm.client.config:
             username: xxxx
@@ -29,9 +29,9 @@ Examples:
                    oderevent1(task name): customer\shopbundle\tasks\oderevent1
     ```
 
-Import `task.conf.yml` in `ezpublish/config/ezpublish.yml` by adding:
+Import `jbpmconf.yml` in `ezpublish/config/ezpublish.yml` by adding:
     
     ```
     imports:
-         - { resource: task.conf.yml }
+         - { resource: jbpmconf.yml }
     ```
