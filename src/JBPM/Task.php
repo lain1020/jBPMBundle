@@ -45,15 +45,19 @@ class Task
     {
         $this->taskid = $id;
         $this->client = $client;
-
-        $taskSummaryList = $client->get('task/query?taskId='.$id);
-        $taskSummaryArray = $taskSummaryList->json();
-        foreach ($taskSummaryArray['taskSummaryList'] as $taskSummary)
-        {
-            $this->taskname = $taskSummary['task-summary']['name'];
-            $this->processid = $taskSummary['task-summary']['process-id'];
-            $this->status = $taskSummary['task-summary']['status'];
-            $this->processinstanceid = $taskSummary['task-summary']['process-instance-id'];
+        try {
+            $taskSummaryList = $client->get('task/query?taskId='.$id);
+            $taskSummaryArray = $taskSummaryList->json();
+            if (is_array($taskSummaryArray) && count($taskSummaryArray) > 0) {
+                foreach ($taskSummaryArray['taskSummaryList'] as $taskSummary) {
+                    $this->taskname = $taskSummary['task-summary']['name'];
+                    $this->processid = $taskSummary['task-summary']['process-id'];
+                    $this->status = $taskSummary['task-summary']['status'];
+                    $this->processinstanceid = $taskSummary['task-summary']['process-instance-id'];
+                }
+            }
+        } catch(Exception $e) {
+            // do nothing
         }
     }
 
@@ -74,14 +78,20 @@ class Task
     public function start()
     {
         $task_id = $this->getID();
-        $task_start = $this->client->post('task/'.$task_id.'/start');
-        $task_status = $task_start->json();
-        if ($task_status['status'] == self::STATUS_SUCCESS)
-        {
-            return true;
-        }
-        else {
-            throw new Exception("Task is start with error!");
+        try {
+            $task_start = $this->client->post('task/'.$task_id.'/start');
+            // Get only allowed tasks
+            if ($task_start->getStatusCode() == 200) {
+                $task_status = $task_start->json();
+                if ($task_status['status'] == self::STATUS_SUCCESS) {
+                    return true;
+                }
+                else {
+                    throw new Exception("Task starts with error!");
+                }
+            }
+        } catch(Exception $e) {
+            // do nothing
         }
     }
 
@@ -94,14 +104,20 @@ class Task
     public function complete()
     {
         $task_id = $this->getID();
-        $task_complete = $this->client->post('task/'.$task_id.'/complete');
-        $task_status = $task_complete->json();
-        if ($task_status['status'] == self::STATUS_SUCCESS)
-        {
-            return true;
-        }
-        else {
-            throw new Exception("Task is complete with error!");
+        try {
+            $task_complete = $this->client->post('task/'.$task_id.'/complete');
+            // Get only allowed tasks
+            if ($task_complete->getStatusCode() == 200) {
+                $task_status = $task_complete->json();
+                if ($task_status['status'] == self::STATUS_SUCCESS) {
+                    return true;
+                }
+                else {
+                    throw new Exception("Task is complete with error!");
+                }
+            }
+        } catch(Exception $e) {
+            // do nothing
         }
     }
 }

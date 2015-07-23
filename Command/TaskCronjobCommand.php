@@ -31,34 +31,33 @@ class TaskCronjobCommand extends ContainerAwareCommand
                 array()
             );
     }
-    
+
    /**
      * Executes the command
      * 
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    protected function execute( InputInterface $input, OutputInterface $output )
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container = $this->getContainer();
         $jbpmService = $container->get('jbpm.client');
         $curtaskObjects = $container->get('jbpm.task')->getTaskNameArray();
 
         $reserved_tasks = $jbpmService->getTasks(Task::STATUS_IN_RESERVED);
-        if (count( $reserved_tasks ) > 0 )
-        {
-            foreach ($reserved_tasks as $reserved_task)
-            {
+        if (count( $reserved_tasks ) > 0) {
+            foreach ($reserved_tasks as $reserved_task) {
                 $forwardtasks = $jbpmService->getForwardTasks($reserved_task->processinstanceid);
 
-                if (count($forwardtasks) > 0)
-                {
-                    foreach ($forwardtasks as $forwardtask)
-                    {
+                if (count($forwardtasks) > 0) {
+                    foreach ($forwardtasks as $forwardtask) {
                         try {
                             $forwardtask->start();
                         } catch (Exception $e) {
-                            echo 'Caught exception: ',  $e->getMessage(), "\n";
+                            $logger = $container->get('logger');
+                            $errorText = 'Error TaskCronjobCommand: ' . $e->getMessage();
+                            $logger->error($errorText);
+                            $output->writeln($errorText);
                         }
                     }
                 }
@@ -74,21 +73,23 @@ class TaskCronjobCommand extends ContainerAwareCommand
                     $taskName = $taskStringArray[1];
                     if ($task->taskname === $taskName && $task->processid === $processId) {
                         $processInstance = new ProcessInstance($task->processinstanceid, $jbpmService->getClient());
-
                         if (class_exists($taskClass)) {
-                            $taskFunction = new $taskClass($processInstance, $task, $container);
-                            $taskFunction->execute();
+                            $taskInstance = new $taskClass($processInstance, $task, $container);
+                            $taskInstance->execute();
                         }
                         try {
                             $task->complete();
                         } catch (Exception $e) {
-                            echo 'Caught exception: ',  $e->getMessage(), "\n";
+                            $logger = $container->get('logger');
+                            $errorText = 'Error TaskCronjobCommand: ' . $e->getMessage();
+                            $logger->error($errorText);
+                            $output->writeln($errorText);
                         }
                     }
                 }
             }
         } else {
-            $output->writeln( "there is no running instance of the Task!" );
+            $output->writeln("there is no running instance of the Task!");
         }
     }
 }
