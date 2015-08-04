@@ -15,6 +15,7 @@ Examples:
             username: xxxx
             password: xxxxx
             baseurl: http://localhost/jbpm-console/rest/
+            defaults_verify: true|false (true is default)
 
         jbpm.task.config:
             cms(project name):
