@@ -30,11 +30,15 @@ class JBPMService
         if (!isset($config['password'])) {
             throw new Exception("password is required for jBPM Service");
         }
+        $verify = true;
+        if (isset($config['defaults_verify']) && $config['defaults_verify'] === false)
+            $verify = false;
         $this->client = new Client([
               'base_url' => $config['baseurl'],
               'defaults' => [
                    'auth' => [$config['username'], $config['password']],
-                   'headers'=>['Accept'=>'application/json']
+                   'headers' => ['Accept'=>'application/json'],
+                   'verify' => $verify
               ]
         ]);
     }
