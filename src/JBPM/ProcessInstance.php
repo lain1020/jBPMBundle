@@ -99,8 +99,12 @@ class ProcessInstance
         $processInstId = $this->getProcessInstanceId();
         try {
             $processInstAbortRequest = $this->client->post('runtime/'.$deploymentId.'/process/instance/'.$processInstId.'/abort');
+            if ($processInstAbortRequest->getStatusCode() == 200) {
+                return true;
+            }
+            return false;
         } catch(\Exception $e) {
-            // do nothing
+            // no nothing
         }
     }
 }
