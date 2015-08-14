@@ -38,6 +38,8 @@ class JBPMService
               'defaults' => [
                    'auth' => [$config['username'], $config['password']],
                    'headers' => ['Accept'=>'application/json'],
+                   'connect_timeout' => '10.00',
+                   'timeout' => '10.00',
                    'verify' => $verify
               ]
         ]);
