@@ -14,7 +14,7 @@ use Exception;
 
 /**
  * Cronjob: Control of Start/Stop Task.
- * Command: php ezpublish/console jbpm:copy:process --process
+ * Command: php ezpublish/console jbpm:copy:process --processId=123
  * */
 
 class CopyProcessInstanceCommand extends ContainerAwareCommand
