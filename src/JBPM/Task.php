@@ -120,4 +120,30 @@ class Task
             // do nothing
         }
     }
+    
+    /**
+     * Suspends a task
+     *
+     * @return boolean
+     * @throws Exception If suspends a Task with error
+     */
+    public function suspend()
+    {
+        $task_id = $this->getID();
+        try {
+            $task_suspend = $this->client->post('task/'.$task_id.'/suspend');
+            // Get only allowed tasks
+            if ($task_suspend->getStatusCode() == 200) {
+                $task_status = $task_suspend->json();
+                if ($task_status['status'] == self::STATUS_SUCCESS) {
+                    return true;
+                }
+                else {
+                    throw new Exception("Suspends Task with error!");
+                }
+            }
+        } catch(Exception $e) {
+            // do nothing
+        }
+    }
 }
