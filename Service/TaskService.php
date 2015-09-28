@@ -7,6 +7,11 @@ class TaskService
      * @var an array of Task Name
      */
     protected $taskNameArray;
+    
+    /**
+     * @var an array of Process Name
+     */
+    protected $processNameArray;
 
     /**
      * class constructor
@@ -15,6 +20,7 @@ class TaskService
      */
     public function __construct( $config)
     {
+        $process_name_array = array();
         foreach($config as $project_name => $config_items)
         {
             foreach($config_items as $process_name => $config_item)
@@ -23,10 +29,12 @@ class TaskService
                 {
                     $task_string = $project_name.".".$process_name."-".$task_name;
                     $task_name_array[$task_string] = $task_executer;
+                    array_push($process_name_array,$process_name);
                 }
             }
         }
         $this->task_name_array = $task_name_array;
+        $this->process_name_array = $process_name_array;
     }
 
     /**
@@ -38,5 +46,16 @@ class TaskService
     {
         $taskNameArray = $this->task_name_array;
         return $taskNameArray;
+    }
+    
+    /**
+     * gets the Process names
+     *
+     * @return array of Process Name
+     */
+    public function getProcessNameArray()
+    {
+        $processNameArray = $this->process_name_array;
+        return $processNameArray;
     }
 }
