@@ -33,7 +33,7 @@ class ProcessInstance
     }
 
    /**
-    * @return Objeck of Task
+    * @return Object of Task
     * @throws Exception If Task does not exist
     */
     public function currentTask()
@@ -70,7 +70,9 @@ class ProcessInstance
     }
 
    /**
-    * @return  data of Process in an array
+    * Get variables of process instance
+    * 
+    * @return array $data
     */
     public function getData()
     {
@@ -92,19 +94,22 @@ class ProcessInstance
     }
 
     /**
-     * Abort process instance
+     * Get process instance data
+     * 
+     * @return array $data
      */
-    public function abort($deploymentId)
+    public function getProcessInstanceData()
     {
+        $data = array();
         $processInstId = $this->getProcessInstanceId();
         try {
-            $processInstAbortRequest = $this->client->post('runtime/'.$deploymentId.'/process/instance/'.$processInstId.'/abort');
-            if ($processInstAbortRequest->getStatusCode() == 200) {
-                return true;
+            $processInstDataRequest = $this->client->get('history/instance/'.$processInstId);
+            if ($processInstDataRequest->getStatusCode() == 200) {
+                $data = $processInstDataRequest->json();
             }
-            return false;
         } catch(\Exception $e) {
             // no nothing
         }
+        return $data;
     }
 }

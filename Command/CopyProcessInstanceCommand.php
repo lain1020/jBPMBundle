@@ -56,9 +56,10 @@ EOT
             $processId = $processIdArray[0];
         if ($processId != '') {
             $jbpmService = $container->get('jbpm.client');
-            $oldProcessInstance = new ProcessInstance($processId, $jbpmService->client);
-            $data = $oldProcessInstance->getData();
-            if (is_array($data)) {
+            $copyFromProcessInstance = new ProcessInstance($processId, $jbpmService->client);
+            $data = $copyFromProcessInstance->getData();
+            $processData = $copyFromProcessInstance->getProcessInstanceData();
+            if (count($data) > 0 && count($processData) > 0 && isset($processData['process-id'])) {
                 $output->writeln(
                     sprintf(
                         'Get process instance with id <info>%s</info>, data <info>%s</info>',
@@ -67,18 +68,19 @@ EOT
                     )
                 );
                 // Copy process instance
-                $processDefinition = $jbpmService->getProcess('cms.order');
+                $processDefinition = $jbpmService->getProcess($processData['process-id']);
                 // Send our data array to the workflow engine
                 $processInstance = $processDefinition->start($data);
                 if($processInstance !== null) {
+                    $output->writeln(
+                        sprintf(
+                            'Copied process instance with id <info>%s</info>',
+                            $processInstance->getProcessInstanceId()
+                        )
+                    );
                     $task = $processInstance->currentTask();
                     if($task !== null) {
-                        $output->writeln(
-                            sprintf(
-                                'Copied process instance with id <info>%s</info>',
-                                $processInstance->getProcessInstanceId()
-                            )
-                        );
+                        $output->writeln('Created task');
                     }
                 }
             }
