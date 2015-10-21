@@ -92,19 +92,22 @@ class ProcessInstance
     }
 
     /**
-     * Abort process instance
+     * Get process instance data
+     * 
+     * @return array $data
      */
-    public function abort($deploymentId)
+    public function getProcessInstanceData()
     {
+        $data = array();
         $processInstId = $this->getProcessInstanceId();
         try {
-            $processInstAbortRequest = $this->client->post('runtime/'.$deploymentId.'/process/instance/'.$processInstId.'/abort');
-            if ($processInstAbortRequest->getStatusCode() == 200) {
-                return true;
+            $processInstDataRequest = $this->client->get('history/instance/'.$processInstId);
+            if ($processInstDataRequest->getStatusCode() == 200) {
+                $data = $processInstDataRequest->json();
             }
-            return false;
         } catch(\Exception $e) {
             // no nothing
         }
+        return $data;
     }
 }
