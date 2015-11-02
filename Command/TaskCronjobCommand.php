@@ -67,8 +67,9 @@ class TaskCronjobCommand extends ContainerAwareCommand
                                     $forwardtask->start();
                                     $SalesforceInstance = new ProcessInstance($reserved_task->processinstanceid, $jbpmService->getClient());
                                     $StoreSalesforcetaskInstance = new $StoreSalesforceClass($SalesforceInstance, $forwardtask, $container);
-                                    $StoreSalesforcetaskInstance->execute();
-                                    $forwardtask->complete();
+                                    $status = $StoreSalesforcetaskInstance->execute();
+                                    if ($status !== false)
+                                        $forwardtask->complete();
                                 } catch (Exception $e) {
                                     $logger = $container->get('logger');
                                     $errorText = 'Error TaskCronjobCommand: ' . $e->getMessage();
@@ -84,8 +85,9 @@ class TaskCronjobCommand extends ContainerAwareCommand
                                             $getStoreMediabaseTask->start();
                                             $MediabaseInstance = new ProcessInstance($reserved_task->processinstanceid, $jbpmService->getClient());
                                             $StoreMediabaseTaskInstance = new $StoreMediabaseClass($MediabaseInstance, $getStoreMediabaseTask, $container);
-                                            $StoreMediabaseTaskInstance->execute();
-                                            $getStoreMediabaseTask->complete();
+                                            $status = $StoreMediabaseTaskInstance->execute();
+                                            if ($status !== false)
+                                                $getStoreMediabaseTask->complete();
                                         } catch (Exception $e) {
                                             $logger = $container->get('logger');
                                             $errorText = 'Error TaskCronjobCommand: ' . $e->getMessage();
@@ -123,8 +125,9 @@ class TaskCronjobCommand extends ContainerAwareCommand
                         try{
                             $SalesforceInstance = new ProcessInstance($task->processinstanceid, $jbpmService->getClient());
                             $StoreSalesforcetaskInstance = new $StoreSalesforceClass($SalesforceInstance, $task, $container);
-                            $StoreSalesforcetaskInstance->execute();
-                            $task->complete();
+                            $status = $StoreSalesforcetaskInstance->execute();
+                            if ($status !== false)
+                                $task->complete();
                         } catch (Exception $e) {
                             $logger = $container->get('logger');
                             $errorText = 'Error TaskCronjobCommand: ' . $e->getMessage();
@@ -140,8 +143,9 @@ class TaskCronjobCommand extends ContainerAwareCommand
                                     $getStoreMediabaseTask->start();
                                     $MediabaseInstance = new ProcessInstance($task->processinstanceid, $jbpmService->getClient());
                                     $StoreMediabaseTaskInstance = new $StoreMediabaseClass($MediabaseInstance, $getStoreMediabaseTask, $container);
-                                    $StoreMediabaseTaskInstance->execute();
-                                    $getStoreMediabaseTask->complete();
+                                    $status = $StoreMediabaseTaskInstance->execute();
+                                    if ($status !== false)
+                                        $getStoreMediabaseTask->complete();
                                 } catch (Exception $e) {
                                     $logger = $container->get('logger');
                                     $errorText = 'Error TaskCronjobCommand: ' . $e->getMessage();
@@ -163,9 +167,10 @@ class TaskCronjobCommand extends ContainerAwareCommand
                             try {
                                 if (class_exists($taskClass)) {
                                     $taskInstance = new $taskClass($processInstance, $task, $container);
-                                    $taskInstance->execute();
+                                    $status = $taskInstance->execute();
+                                    if ($status !== false)
+                                        $task->complete();
                                 }
-                                $task->complete();
                             } catch (Exception $e) {
                                 $logger = $container->get('logger');
                                 $errorText = 'Error TaskCronjobCommand: ' . $e->getMessage();
