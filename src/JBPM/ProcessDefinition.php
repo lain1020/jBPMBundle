@@ -69,11 +69,8 @@ class ProcessDefinition
         $id_array = $this->getDeploymentID();
         if (count($id_array)>0)
         {
-            foreach ($id_array as $proce_id => $dep_id)
+            foreach ($id_array as $processDef_id => $deploy_id)
             {
-                $processDef_id = $proce_id;
-                $deploy_id = $dep_id;
-
                 $process_start = $this->client->post('runtime/'.$deploy_id.'/process/'.$processDef_id.'/start?'.implode('&', $parameters));
                 $process_status = $process_start->json();
                 if ($process_status['status'] == Task::STATUS_SUCCESS)
@@ -81,11 +78,11 @@ class ProcessDefinition
                     $processInstance = new ProcessInstance($process_status['id'], $this->client);
                     return $processInstance;
                 } else {
-                    throw new Exception( "Process starting error!");
+                    throw new \Exception("Process starting error!");
                 }
             }
         } else {
-            throw new Exception( "Process starting error!");
+            throw new \Exception("Process starting error!");
         }
     }
 
@@ -99,12 +96,12 @@ class ProcessDefinition
     private function getValueAsString($value, $key, &$params)
     {
         if (!is_array($value) && !is_object($value)) {
-            $params[] = 'map_'.$key.'='.urlencode($value);
+            $params[] = 'map_'.$key.'="'.urlencode($value).'"';
         }
         else {
             foreach ($value as $keyItem => $valueItem) {
                 if (!is_array($valueItem) && !is_object($valueItem)) {
-                    $params[] = 'map_'.$key.'_'.$keyItem.'='.urlencode($valueItem);
+                    $params[] = 'map_'.$key.'_'.$keyItem.'="'.urlencode($valueItem).'"';
                 }
                 else {
                     $this->getValueAsString($valueItem, $key."_".$keyItem, $params);
