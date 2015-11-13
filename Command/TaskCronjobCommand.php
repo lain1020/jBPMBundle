@@ -56,6 +56,7 @@ class TaskCronjobCommand extends ContainerAwareCommand
         $reserved_tasks = $jbpmService->getTasks(Task::STATUS_IN_RESERVED);
         if (count( $reserved_tasks ) > 0) {
             foreach ($reserved_tasks as $reserved_task) {
+              if($reserved_task->taskname != 'SalesforceFeedback') {
                 $forwardtasks = $jbpmService->getForwardTasks($reserved_task->processinstanceid);
 
                 if (count($forwardtasks) > 0) {
@@ -113,6 +114,7 @@ class TaskCronjobCommand extends ContainerAwareCommand
                         }
                     }
                 }
+              }
             }
         }
 
@@ -187,5 +189,6 @@ class TaskCronjobCommand extends ContainerAwareCommand
             //Do Nothing!
            // $output->writeln("there is no running instance of the Task!");
         }
+        unset($reserved_tasks，$inprogress_tasks);
     }
 }
