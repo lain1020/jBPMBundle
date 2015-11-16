@@ -189,6 +189,6 @@ class TaskCronjobCommand extends ContainerAwareCommand
             //Do Nothing!
            // $output->writeln("there is no running instance of the Task!");
         }
-        unset($reserved_tasks，$inprogress_tasks);
+        unset($reserved_tasks, $inprogress_tasks);
     }
 }
