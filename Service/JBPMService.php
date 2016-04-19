@@ -132,13 +132,15 @@ class JBPMService
     public function getForwardTasks($processinstanceid)
     {
         $forwardTask = array();
-        $forwardtasklist = $this->client->get('task/query?processInstanceId='.$processinstanceid);
-        $forwardtaskArray = $forwardtasklist->json();
-        foreach ($forwardtaskArray['taskSummaryList'] as $forwardtask)
-        {
-            if ($forwardtask['task-summary']['status'] == Task::STATUS_IN_RESERVED)
+        if ($processinstanceid != 0 && $processinstanceid != '') {
+            $forwardtasklist = $this->client->get('task/query?processInstanceId='.$processinstanceid);
+            $forwardtaskArray = $forwardtasklist->json();
+            foreach ($forwardtaskArray['taskSummaryList'] as $forwardtask)
             {
-                $forwardTask[] = new Task($forwardtask['task-summary']['id'], $this->client);
+                if ($forwardtask['task-summary']['status'] == Task::STATUS_IN_RESERVED)
+                {
+                    $forwardTask[] = new Task($forwardtask['task-summary']['id'], $this->client);
+                }
             }
         }
         return $forwardTask;
