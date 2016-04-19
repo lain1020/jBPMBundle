@@ -43,7 +43,8 @@ class TaskCronjobCommand extends ContainerAwareCommand
         $container = $this->getContainer();
         $jbpmService = $container->get('jbpm.client');
         $curtaskObjects = $container->get('jbpm.task')->getTaskNameArray();
-        
+        $jbpmServiceConfig = $container->getParameter('jbpm.client.config');
+
         foreach ($curtaskObjects as $taskString => $taskClass) {
             if (strpos($taskString ,"StoreSalesforce") !== false) {
                 $StoreSalesforceClass = $taskClass;
@@ -52,11 +53,10 @@ class TaskCronjobCommand extends ContainerAwareCommand
                 $StoreMediabaseClass = $taskClass;
             }
         }
-        
-        $reserved_tasks = $jbpmService->getTasks(Task::STATUS_IN_RESERVED);
+
+        $reserved_tasks = $jbpmService->getTasks(Task::STATUS_IN_RESERVED, $jbpmServiceConfig['username']);
         if (count( $reserved_tasks ) > 0) {
             foreach ($reserved_tasks as $reserved_task) {
-              if($reserved_task->taskname != 'SalesforceFeedback') {
                 $forwardtasks = $jbpmService->getForwardTasks($reserved_task->processinstanceid);
 
                 if (count($forwardtasks) > 0) {
@@ -64,7 +64,7 @@ class TaskCronjobCommand extends ContainerAwareCommand
                         //special cronjob for "Process Order"
                         if ($forwardtask->taskname === 'StoreSalesforce') {
                             if (!is_null($StoreSalesforceClass) && !is_null($StoreMediabaseClass)) {
-                                try{
+                                try {
                                     $forwardtask->start();
                                     $SalesforceInstance = new ProcessInstance($reserved_task->processinstanceid, $jbpmService->getClient());
                                     $StoreSalesforcetaskInstance = new $StoreSalesforceClass($SalesforceInstance, $forwardtask, $container);
@@ -82,7 +82,7 @@ class TaskCronjobCommand extends ContainerAwareCommand
                                 $getStoreMediabaseTasks = $jbpmService->getForwardTasks($reserved_task->processinstanceid);
                                 foreach ($getStoreMediabaseTasks as $getStoreMediabaseTask) {
                                     if ($getStoreMediabaseTask->taskname === 'StoreMediabase') {
-                                        try{
+                                        try {
                                             $getStoreMediabaseTask->start();
                                             $MediabaseInstance = new ProcessInstance($reserved_task->processinstanceid, $jbpmService->getClient());
                                             $StoreMediabaseTaskInstance = new $StoreMediabaseClass($MediabaseInstance, $getStoreMediabaseTask, $container);
@@ -100,7 +100,8 @@ class TaskCronjobCommand extends ContainerAwareCommand
                                     }
                                 }
                             }
-                        } else {
+                        } 
+                        else {
                             try {
                                 $forwardtask->start();
                             } catch (Exception $e) {
@@ -114,11 +115,10 @@ class TaskCronjobCommand extends ContainerAwareCommand
                         }
                     }
                 }
-              }
             }
         }
 
-        $inprogress_tasks = $jbpmService->getTasks(Task::STATUS_IN_PROGRESS);
+        $inprogress_tasks = $jbpmService->getTasks(Task::STATUS_IN_PROGRESS, $jbpmServiceConfig['username']);
         if (count($inprogress_tasks) > 0) {
             foreach ($inprogress_tasks as $task) {
                 //special cronjob for "Process Order"
