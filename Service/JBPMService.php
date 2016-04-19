@@ -111,12 +111,12 @@ class JBPMService
 
    /**
     * @param string type Status Type of Task
-    * @return Array of Task  Status "In Progress" oder Status "Reserved"
+    * @return Array of Task Status "In Progress" or "Reserved", only for creator as task owner
     */
-    public function getTasks($type = Task::STATUS_IN_PROGRESS)
+    public function getTasks($type, $taskOwner)
     {
         $taskArray = array();
-        $tasklist = $this->client->get('task/query?status='.$type);
+        $tasklist = $this->client->get('task/query?status='.$type.'&taskOwner='.$taskOwner);
         $taskSummaryArray = $tasklist->json();
         foreach ($taskSummaryArray['taskSummaryList'] as $taskSummary)
         {
