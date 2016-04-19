@@ -20,7 +20,7 @@ class ProcessInstance
      */
     public function __construct($id, $client)
     {
-        $this->processInstanceId = $id;
+        $this->processInstanceId = ($id != '') ? $id : 0;
         $this->client = $client;
     }
 
@@ -40,28 +40,30 @@ class ProcessInstance
     {
         $processInsId = $this->getProcessInstanceId();
         try {
-            $task_summary = $this->client->get('task/query?processInstanceId='.$processInsId);
-            // Get only allowed tasks
-            if ($task_summary->getStatusCode() == 200) {
-                $task_json = $task_summary->json();
+            if ($processInsId != 0) {
+                $task_summary = $this->client->get('task/query?processInstanceId='.$processInsId);
+                // Get only allowed tasks
+                if ($task_summary->getStatusCode() == 200) {
+                    $task_json = $task_summary->json();
 
-                foreach ($task_json['taskSummaryList'] as $task_att) {
-                    if (!isset($task_id)) {
-                        $task_id = $task_att['task-summary']['id'];
-                        break;
+                    foreach ($task_json['taskSummaryList'] as $task_att) {
+                        if (!isset($task_id)) {
+                            $task_id = $task_att['task-summary']['id'];
+                            break;
+                        }
                     }
                 }
-            }
 
-            $task_start = $this->client->post('task/'.$task_id.'/start');
-            // Get only allowed tasks
-            if ($task_start->getStatusCode() == 200) {
-                $task_status = $task_start->json();
-                if ($task_status['status'] == Task::STATUS_SUCCESS) {
-                    $task = new Task($task_id, $this->client);
-                    return $task;
-                } else {
-                    throw new Exception("Task does not exist!");
+                $task_start = $this->client->post('task/'.$task_id.'/start');
+                // Get only allowed tasks
+                if ($task_start->getStatusCode() == 200) {
+                    $task_status = $task_start->json();
+                    if ($task_status['status'] == Task::STATUS_SUCCESS) {
+                        $task = new Task($task_id, $this->client);
+                        return $task;
+                    } else {
+                        throw new Exception("Task does not exist!");
+                    }
                 }
             }
         } catch(\Exception $e) {
