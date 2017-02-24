@@ -2,6 +2,13 @@
 
 A symfony2 bundle to communicate to JBPM 6 API.
 
+## Start a JBPM Server
+
+    docker run -p 8080:8080 -p 8001:8001 -d --name jbpm-workbench jboss/jbpm-workbench:latest
+
+Once container and web applications started, you can navigate into the jBPM Workbench at:
+
+http://localhost:8080/jbpm-console
 
 ## Configuration example
 
